@@ -5,9 +5,9 @@ project(Port_Scanner)
 set(CMAKE_C_STANDARD 17)
 
 add_executable(Port_Scanner
-        Test/scanner.c
-        Test/libs/syn_scanning.h
-        Test/libs/syn_scanning.c
+        scanner.c
+#        Test/libs/syn_scanning.h
+        libs/syn_scanning.c
         )
 
 target_link_libraries(Port_Scanner resolv -lm)
