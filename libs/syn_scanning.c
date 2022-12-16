@@ -1,4 +1,4 @@
-#include "compression.h"
+#include "syn_scanning.h"
 
 struct in_addr ouraddr = { 0 };
 unsigned long global_rtt;        //  round time of transfering

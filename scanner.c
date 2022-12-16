@@ -1,4 +1,4 @@
-#include "./libs/compression.h"
+#include "./libs/syn_scanning.h"
 
 
 /*GLOBAL FLAGS*/
