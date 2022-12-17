@@ -6,7 +6,9 @@ set(CMAKE_C_STANDARD 17)
 
 add_executable(Port_Scanner
         scanner.c
-#        Test/libs/syn_scanning.h
+        libs/udp_scan.h
+        libs/udp_scan.c
+        libs/syn_scanning.h
         libs/syn_scanning.c
         )
 

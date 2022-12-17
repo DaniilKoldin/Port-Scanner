@@ -1,8 +1,9 @@
 #include "./libs/syn_scanning.h"
+#include "./libs/udp_scan.h"
 
 
 /*GLOBAL FLAGS*/
-u_char udpscan=0, synscan=0, lamerscan = 0;
+u_char udpscan=0, synscan=0, debugging = 0;
 u_char max_parallel_sockets= MAX_SOCKETS;
 u_long num_ports;
 u_short *ports = NULL;
@@ -63,12 +64,9 @@ int main(int argc, char **argv) {
         if (hostup) {
             if (synscan) syn_scan(cur_addr, ports, &openports);
 
-//        if (udpscan) {
-//            if (!is_root || lamerscan)
-//                lamer_udp_scan(cur_addr, ports, &openports);
-//
-//            else udp_scan(cur_addr, ports, &openports);
-//        }
+            if (udpscan) {
+                lamer_udp_scan(cur_addr, ports, &openports);
+            }
 
             if (openports) {
                 printf("Open ports on %s (%s):\n", cur_name,
@@ -115,11 +113,12 @@ void parse_target(char *target, struct in_addr *target_in_addr, struct in_addr *
 
 void parse_com_str(int argc, char *fakeargv[]){
     int arg;
-    while((arg = getopt(argc,fakeargv,"lM:p:s")) != EOF) {
+    while((arg = getopt(argc,fakeargv,"d:uM:p:s")) != EOF) {
         switch(arg) {
+            case 'd': debugging = atoi(optarg); break;
             case 'h':
             case '?': printusage(fakeargv[0]); break;
-            case 'l': lamerscan++; udpscan++; break;
+            case 'u': udpscan++; break;
             case 'M': max_parallel_sockets = atoi(optarg); break;
             case 'p':
                 if (ports)

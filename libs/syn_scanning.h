@@ -1,6 +1,3 @@
-#ifndef PORT_SCANNER_COMPRESSION_H
-#define PORT_SCANNER_COMPRESSION_H
-
 #ifndef PORT_SCANNER_SYN_SCANNING_H
 #define PORT_SCANNER_SYN_SCANNING_H
 
@@ -34,7 +31,8 @@
 
 
 extern u_long num_ports;                //  number of ports
-
+extern u_char max_parallel_sockets;
+extern u_char debugging;
 /*****************STRUCTURES****************/
 typedef struct pseudo_header { //Needed for checksum calculation
     unsigned int source_address;
@@ -81,9 +79,5 @@ int send_tcp_raw( int sd, struct in_addr *source,
 portlist syn_scan(struct in_addr target, unsigned short *portarray,
                   portlist *ports);
 
-//void prepare_datagram(char *datagram, struct in_addr local, struct in_addr remote,
-//                      struct iphdr *iph, struct tcphdr *tcph);
 
 #endif //PORT_SCANNER_SYN_SCANNING_H
-
-#endif //PORT_SCANNER_COMPRESSION_H

@@ -2,6 +2,7 @@
 
 struct in_addr ouraddr = { 0 };
 unsigned long global_rtt;        //  round time of transfering
+
 /***********HELP FUNCTIONS*********/
 void printusage(char *name) {
     printf("%s [options] [hostname[/mask] . . .]\
@@ -162,6 +163,7 @@ int addport(portlist *ports, unsigned short portno, unsigned short protocol,
     struct port *current, *tmp;
     int len;
 
+    num_ports++;
     if (*ports) {
         current = *ports;
         /* case 1: we add to the front of the list */
@@ -237,7 +239,7 @@ portlist syn_scan(struct in_addr target, unsigned short *portarray, portlist *po
     int received, bytes, starttime;
     struct sockaddr_in from;
     int fromsize = sizeof(struct sockaddr_in);
-    int sockets[MAX_SOCKETS];
+    int sockets[max_parallel_sockets];
     struct timeval tv;
     char packet[65535];
     struct iphdr *ip = (struct iphdr *) packet;
@@ -268,16 +270,16 @@ portlist syn_scan(struct in_addr target, unsigned short *portarray, portlist *po
         source_malloc = 1;
         if (gethostname(myname, MAXHOSTNAMELEN) ||
             !(myhostent = gethostbyname(myname)))
-        fatal("Your system is fucked up.\n");
+        fatal("Your network system isn't works.\n");
         memcpy(source, myhostent->h_addr_list[0], sizeof(struct in_addr));
     }
 
     starttime = time(NULL);
     int j = 0;
     do {
-        for(int i=0; i < MAX_SOCKETS && portarray[j]; i++) {
+        for(int i=0; i < max_parallel_sockets && portarray[j]; i++) {
             if ((sockets[i] = socket(AF_INET, SOCK_RAW, IPPROTO_RAW)) < 0)
-                perror("socket trobles in syn_scan");
+                perror("socket troubles in syn_scan");
             else {
                 send_tcp_raw(sockets[i], source, &target, MAGIC_PORT,
                              portarray[j++], 0, 0, TH_SYN, 0, 0, 0);
@@ -290,17 +292,23 @@ portlist syn_scan(struct in_addr target, unsigned short *portarray, portlist *po
             while  ((bytes = recvfrom(received, packet, 65535, 0,
                                       (struct sockaddr *)&from, &fromsize)) > 0 ) {
                 if (ip->saddr == target.s_addr) {
-                    if (!(tcp->th_flags & TH_RST)) {
+                    if (tcp->th_flags & TH_RST) {
+                        if (debugging > 1)
+                            printf("Nothing open on port %d\n",
+                                   ntohs(tcp->th_sport));
+                    }
+                    else {
                         addport(ports, ntohs(tcp->source),
                                 IPPROTO_TCP, NULL);
                     }
                 }
             }
         }
-        for(int i=0; i < MAX_SOCKETS && portarray[j]; i++) close(sockets[i]);
+        for(int i=0; i < max_parallel_sockets && portarray[j]; i++) close(sockets[i]);
     } while (portarray[j]);
-    printf("The TCP SYN scan took %ld seconds to scan %d ports.\n",
-           time(NULL) - starttime, num_ports);
+    if (debugging)
+        printf("The TCP SYN scan took %ld seconds to scan %d ports.\n",
+            time(NULL) - starttime, num_ports);
     close(received);
     return *ports;
 }
@@ -312,9 +320,7 @@ int send_tcp_raw( int sd, struct in_addr *source,
                   unsigned short window, char *data,
                   unsigned short datalen)
 {
-
     struct pseudo_header {
-        /*for computing TCP checksum, see TCP/IP Illustrated p. 145 */
         unsigned long s_addr;
         unsigned long d_addr;
         char zer0;
@@ -345,12 +351,10 @@ int send_tcp_raw( int sd, struct in_addr *source,
         source = malloc(sizeof(struct in_addr));
         if (gethostname(myname, MAXHOSTNAMELEN) ||
             !(myhostent = gethostbyname(myname)))
-        fatal("Your system is fucked up.\n");
+        fatal("Your network system isn't works.\n");
         memcpy(source, myhostent->h_addr_list[0], sizeof(struct in_addr));
     }
 
-/*do we even have to fill out this damn thing?  This is a raw packet,
-  after all */
     sock.sin_family = AF_INET;
     sock.sin_port = htons(dport);
     sock.sin_addr.s_addr = victim->s_addr;
@@ -378,7 +382,7 @@ int send_tcp_raw( int sd, struct in_addr *source,
 
     if (window)
         tcp->th_win = window;
-    else tcp->th_win = htons(2048); /* Who cares */
+    else tcp->th_win = htons(2048);
 
     tcp->th_sum = check_sum((unsigned short *)pseudo, sizeof(struct tcphdr) +
                                                       sizeof(struct pseudo_header) + datalen);
