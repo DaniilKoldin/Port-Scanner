@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.23)
 project(Port_Scanner)
 
 
-set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD 11)
 
 add_executable(Port_Scanner
         scanner.c

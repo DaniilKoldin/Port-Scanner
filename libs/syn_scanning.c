@@ -5,13 +5,14 @@ unsigned long global_rtt;        //  round time of transfering
 
 /***********HELP FUNCTIONS*********/
 void printusage(char *name) {
-    printf("%s [options] [hostname[/mask] . . .]\
-    options (none are required, most can be combined):\
-    -s tcp SYN stealth port scan (must be root)\
-    -u UDP port scan, will use MUCH better version if you are root\
-    -l Do the lamer UDP scan even if root.  Less accurate.\
-    -p <range> ports: ex: \'-p 23\' will only try port 23 of the host(s)\
-    \'-p 20-30,63000-\' scans 20-30 and 63000-65535 default: 1-1024\'",
+    printf("%s [options] [hostname[/mask] . . .]\n\
+    options (none are required, most can be combined):\n\
+    -s tcp SYN stealth port scan (must be root)\n\
+    -u UDP port scan,\n\
+    -M <positive number> set number of parallel ports\n\
+    -d <positive number> set debug level to print additive indo\n\
+    -p <range> ports: ex: \'-p 23\' will only try port 23 of the host(s)\n\
+    \'-p 20-30,63000-\' scans 20-30 and 63000-65535 default: 1-1024\'\n",
            name);
     exit(1);
 }
