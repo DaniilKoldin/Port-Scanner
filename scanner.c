@@ -16,10 +16,9 @@ void parse_com_str(int argc, char *fakeargv[]);
 void parse_target(char *target, struct in_addr *target_in_addr, struct in_addr *last_addr);
 
 int main(int argc, char **argv) {
-    u_long num_ports;
+    u_long num_ports = 0;
     struct in_addr cur_addr, last_addr;
     u_int32_t cur_ip, last_ip;
-    u_long test = 65510;
     portlist openports;
     struct hostent *host;
     struct in_addr *source;
@@ -27,7 +26,7 @@ int main(int argc, char **argv) {
 
     is_root = !(geteuid());
     if ((synscan) && !is_root)
-        fatal("Options specified require root privileges. You don't have them!");
+        fatal("Options specified require root privileges. You don't have them!")
 
     for(int i=0; i < argc; i++) {
         fakeargv[i] = malloc(strlen(argv[i]) + 1);
@@ -125,6 +124,7 @@ void parse_com_str(int argc, char *fakeargv[]){
                     fatal("Only 1 -p option allowed, separate multiple ranges with commas.");
                 ports = getpts(optarg); break;
             case 's': synscan++; break;
+            default: synscan++;
         }
     }
 }

@@ -1,7 +1,7 @@
 #include "syn_scanning.h"
 
 struct in_addr ouraddr = { 0 };
-unsigned long global_rtt;        //  round time of transfering
+unsigned long global_rtt = 0;        //  round time of transfering
 
 /***********HELP FUNCTIONS*********/
 void printusage(char *name) {
