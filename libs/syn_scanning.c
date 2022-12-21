@@ -5,7 +5,7 @@ unsigned long global_rtt = 0;        //  round time of transfering
 
 /***********HELP FUNCTIONS*********/
 void printusage(char *name) {
-    printf("%s [options] [hostname[/mask] . . .]\n\
+    printf("%s  dest-IP[/mask] [options]\n\
     options (none are required, most can be combined):\n\
     -s tcp SYN stealth port scan (must be root)\n\
     -u UDP port scan,\n\
